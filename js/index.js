@@ -1,4 +1,6 @@
-const connection = require("./connection");
+//need to resolve this before uncommenting. blocks inquirer
+// const connection = require("./connection");
+//need to resolve this path issue
 // const db = require("db");
 const inquirer = require("inquirer");
 const consoleTable = require("console.table");
@@ -25,15 +27,19 @@ function updateData(theTable, theField, theCriteria) {
 
 //Use inquirer to allow for command line input
 inquirer
-  .prompt({
-    name: "action",
-    message: "do you want to add, view or update data?",
-    choices: action,
-    //code here
-    //which table do you want to use?
-    //code here
-  })
-  .then({
+  .prompt([
+    {
+      type: "list",
+      name: "action",
+      message: "do you want to add, view or update data?",
+      choices: action,
+    },
+    //   //code here
+    //   //which table do you want to use?
+    //   //code here
+  ])
+  .then((answers) => {
+    console.log("test");
     //determine which function to use with switch case
   });
 
