@@ -3,7 +3,7 @@ const { createConnection } = require("net");
 const util = require("util");
 
 const connection = mysql.createConnection({
-  host: localhost,
+  host: "localhost",
   //port for mySQL
   port: 3306,
   //mySQL username
