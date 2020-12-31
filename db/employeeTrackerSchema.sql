@@ -28,8 +28,3 @@ CREATE TABLE employees(
   FOREIGN KEY (role_id) REFERENCES roles(id),
   FOREIGN KEY (manager_id) REFERENCES employees(id) 
   );
-
-INSERT INTO department(name)
-VALUES ("Sales");
-INSERT INTO department(name)
-VALUES ("Accounting");
