@@ -2,11 +2,17 @@
 const connection = require("./connection");
 //need to resolve this path issue
 // const db = require("db");
+
+const addRecord = require("../operations/addRecords");
+const updateRecord = require("../operations/updateRecords");
+const viewRecord = require("../operations/viewRecords");
+
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 
 const consoleTable = require("console.table");
 const { connect } = require("./connection");
+const viewRecords = require("../operations/viewRecords");
 const actionQuestion = {
   type: "list",
   name: "action",
@@ -36,9 +42,9 @@ function updateData(theTable, theField, theCriteria) {
 //example using console.table
 const queryTest = "SELECT * FROM employees";
 const queryOutput = connection.query(queryTest).then((res) => {
-  console.table(res);
+  // console.table(res);
 });
-console.log("test here: " + queryOutput);
+// console.log("test here: " + queryOutput);
 
 //Use inquirer to allow for command line input
 function askQuestions() {
@@ -65,15 +71,12 @@ function askQuestions() {
       } else {
         console.log("you selected update");
       }
+
+      if (answers.tableSelection === "employees") {
+        viewRecords("employees");
+      }
+      connection.end();
     });
-
-  connection.end();
-}
-
-function selectedAction(theAction) {
-  return function (answers) {
-    return answers[theAction];
-  };
 }
 
 askQuestions();
