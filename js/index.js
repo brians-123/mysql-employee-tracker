@@ -4,9 +4,15 @@
 // const db = require("db");
 const inquirer = require("inquirer");
 const consoleTable = require("console.table");
+const actionQuestion = {
+  type: "list",
+  name: "action",
+  message: "do you want to add, view or update data?",
+  choices: ["add", "view", "update employee role"],
+};
 
 //inquirer choices
-const action = ["add data", "view data", "delete data"];
+//note that the only requirement of user story is to update employee roles
 
 //function to query existing data. used for view and update
 function queryData(theTable, theField, theCriteria) {
@@ -28,20 +34,31 @@ function updateData(theTable, theField, theCriteria) {
 //Use inquirer to allow for command line input
 inquirer
   .prompt([
+    actionQuestion,
+    //code here
+    //which table do you want to use
+
     {
       type: "list",
-      name: "action",
-      message: "do you want to add, view or update data?",
-      choices: action,
+      name: "tableSelection",
+      message: "Which table do you want to use?",
+      choices: ["departments", "roles", "employees"],
+      when: (answers) => answers.action === "view" || answers.action === "add",
     },
-    //   //code here
-    //   //which table do you want to use?
-    //   //code here
   ])
   .then((answers) => {
-    console.log("test");
-    //determine which function to use with switch case
+    if (answers.action === "add" || answers.action === "view") {
+      console.log("you selected add or view");
+    } else {
+      console.log("you selected update");
+    }
   });
+
+function selectedAction(theAction) {
+  return function (answers) {
+    return answers[theAction];
+  };
+}
 
 module.exports = {
   // Add departments, roles, employees
