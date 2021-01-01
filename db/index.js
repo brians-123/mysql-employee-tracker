@@ -17,7 +17,7 @@ const actionQuestion = {
   type: "list",
   name: "action",
   message: "do you want to add, view or update data?",
-  choices: ["add", "view", "update employee role"],
+  choices: ["add", "view", "update"],
 };
 
 //inquirer choices
@@ -62,6 +62,17 @@ function askQuestions() {
         when: (answers) =>
           answers.action === "view" || answers.action === "add",
       },
+      {
+        type: "list",
+        name: "employeeSelection",
+        message: "Which employee do you want to update?",
+        choices: (answers) =>
+          connection.query(queryTest).then((res) => {
+            let allOfTheNames = res.map((item) => item.first_name);
+            return allOfTheNames;
+          }),
+        when: (answers) => answers.action === "update",
+      },
 
       //
     ])
@@ -70,10 +81,20 @@ function askQuestions() {
         console.log("you selected add or view");
       } else {
         console.log("you selected update");
+        connection.query(queryTest).then((res) => {
+          console.log(res);
+          // console.log(res[0].first_name);
+          for (var i = 0; i < res.length; i++) {
+            console.log("print i" + res[i].first_name);
+          }
+          // console.log(res.first_name);
+        });
       }
-
-      if (answers.tableSelection === "employees") {
-        viewRecords("employees");
+      if (answers.action === "view") {
+        console.log(answers.tableSelection);
+        viewRecords(answers.tableSelection);
+      }
+      if (answers.action === "add") {
       }
       connection.end();
     });
