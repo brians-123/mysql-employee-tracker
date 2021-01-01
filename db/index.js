@@ -3,16 +3,15 @@ const connection = require("./connection");
 //need to resolve this path issue
 // const db = require("db");
 
-const addRecord = require("../operations/addRecords");
-const updateRecord = require("../operations/updateRecords");
-const viewRecord = require("../operations/viewRecords");
+const addRecords = require("../operations/addRecords");
+const updateRecords = require("../operations/updateRecords");
+const viewRecords = require("../operations/viewRecords");
 
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 
 const consoleTable = require("console.table");
 const { connect } = require("./connection");
-const viewRecords = require("../operations/viewRecords");
 const actionQuestion = {
   type: "list",
   name: "action",
@@ -41,10 +40,6 @@ function updateData(theTable, theField, theCriteria) {
 }
 //example using console.table
 const queryTest = "SELECT * FROM employees";
-const queryOutput = connection.query(queryTest).then((res) => {
-  // console.table(res);
-});
-// console.log("test here: " + queryOutput);
 
 //Use inquirer to allow for command line input
 function askQuestions() {
@@ -73,36 +68,31 @@ function askQuestions() {
           }),
         when: (answers) => answers.action === "update",
       },
-
-      //
     ])
     .then((answers) => {
       if (answers.action === "add" || answers.action === "view") {
         console.log("you selected add or view");
       } else {
         console.log("you selected update");
-        connection.query(queryTest).then((res) => {
-          console.log(res);
-          // console.log(res[0].first_name);
-          for (var i = 0; i < res.length; i++) {
-            console.log("print i" + res[i].first_name);
-          }
-          // console.log(res.first_name);
-        });
+        connection.query(queryTest).then((res) => {});
       }
       if (answers.action === "view") {
-        console.log(answers.tableSelection);
         viewRecords(answers.tableSelection);
       }
       if (answers.action === "add") {
       }
+      if (answers.employeeSelection !== null) {
+        console.log("employee selected");
+
+        updateRecords(answers.employeeSelection);
+      }
+
       connection.end();
     });
 }
 
+//start inquirer package
 askQuestions();
-
-//working example of console.table
 
 module.exports = {
   // Add departments, roles, employees
