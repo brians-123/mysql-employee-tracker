@@ -70,12 +70,12 @@ function askQuestions() {
       },
       {
         type: "list",
-        name: "roleId",
-        message: "What should their new role be?",
+        name: "managerSelection",
+        message: "Who should be their new manager?",
         choices: (answers) =>
-          connection.query("SELECT * FROM roles").then((res) => {
-            let allOfTheRoles = res.map((item) => item.id);
-            return allOfTheRoles;
+          connection.query("SELECT * FROM employees").then((res) => {
+            let allOfTheManagers = res.map((item) => item.id);
+            return allOfTheManagers;
           }),
         when: (answers) => answers.employeeSelection !== null,
       },
@@ -92,10 +92,10 @@ function askQuestions() {
       }
       if (answers.action === "add") {
       }
-      if (answers.roleId !== null) {
-        console.log("role selected");
+      if (answers.managerSelection !== null) {
+        console.log("manager selected");
 
-        updateRecords(answers.employeeSelection, answers.roleId);
+        updateRecords(answers.employeeSelection, answers.managerSelection);
       }
 
       connection.end();
