@@ -68,6 +68,17 @@ function askQuestions() {
           }),
         when: (answers) => answers.action === "update",
       },
+      {
+        type: "list",
+        name: "roleId",
+        message: "What should their new role be?",
+        choices: (answers) =>
+          connection.query("SELECT * FROM roles").then((res) => {
+            let allOfTheRoles = res.map((item) => item.id);
+            return allOfTheRoles;
+          }),
+        when: (answers) => answers.employeeSelection !== null,
+      },
     ])
     .then((answers) => {
       if (answers.action === "add" || answers.action === "view") {
@@ -81,10 +92,10 @@ function askQuestions() {
       }
       if (answers.action === "add") {
       }
-      if (answers.employeeSelection !== null) {
-        console.log("employee selected");
+      if (answers.roleId !== null) {
+        console.log("role selected");
 
-        updateRecords(answers.employeeSelection);
+        updateRecords(answers.employeeSelection, answers.roleId);
       }
 
       connection.end();
