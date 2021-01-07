@@ -61,9 +61,17 @@ function askQuestions() {
         type: "list",
         name: "employeeSelection",
         message: "Which employee do you want to update?",
+        //currently, this provides the full name. I need it to parse for the first name
+        //and last name only, or to have the id saved. The schema did not have a concatenated
+        //full name column, so I need to do this in the javascript.
         choices: (answers) =>
           connection.query(queryTest).then((res) => {
-            let allOfTheNames = res.map((item) => item.first_name);
+            let idToFullNameMap = res.map(
+              (item) => item.first_name + " " + item.last_name
+            );
+            let allOfTheNames = res.map(
+              (item) => item.first_name + " " + item.last_name
+            );
             return allOfTheNames;
           }),
         when: (answers) => answers.action === "update",
@@ -77,7 +85,7 @@ function askQuestions() {
             let allOfTheManagers = res.map((item) => item.id);
             return allOfTheManagers;
           }),
-        when: (answers) => answers.employeeSelection !== null,
+        when: (answers) => answers.employeeSelection !== undefined,
       },
     ])
     .then((answers) => {
