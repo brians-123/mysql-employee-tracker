@@ -18,11 +18,14 @@ This project uses a mysql database to store employee, role, and department data.
 - CREATE departments, roles and employees.
 - UPDATE employee roles
 - VIEW departments, roles and employees.
-  This project has operations separated into separate folders that are exported into the main index.js file. It also utilizes jest tests which will pass if there is more than one record in each table.
+
+  This project has operations separated into separate folders that are exported into the main index.js file. It also utilizes jest tests which will pass if there is more than one record in each table. The viewing of tables in a clean format is through the use of the console.table npm package.
 
 ## User Story <a id="user-story"></a> :woman:
 
-AS AN HR Manager, I want to be able to manage departments roles and employees as we have org changes SO THAT I can keep employee information up to date
+- AS AN HR Manager,
+- I WANT to be able to manage departments roles and employees as we have org changes
+- SO THAT I can keep employee information up to date
 
 ## Installation <a id="installation"></a> :floppy_disk:
 
@@ -51,4 +54,3 @@ There is one working jest test suite for viewing records. It will pass if there 
 ## Contact <a id="questions"></a> :email:
 
 [github account](https://github.com/brians-123)
-not listed
