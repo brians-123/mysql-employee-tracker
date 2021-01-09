@@ -1,7 +1,4 @@
-//need to resolve this before uncommenting. blocks inquirer
 const connection = require("./connection");
-//need to resolve this path issue
-// const db = require("db");
 
 const addDepartment = require("../operations/addDepartment");
 const addRole = require("../operations/addRole");
@@ -14,9 +11,7 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 
 const consoleTable = require("console.table");
-const { connect } = require("./connection");
 
-//example using console.table
 const employeeQuery = "SELECT * FROM employees";
 const departmentsQuery = "SELECT * FROM departments";
 const roleQuery = "SELECT * FROM roles";
