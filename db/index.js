@@ -3,7 +3,10 @@ const connection = require("./connection");
 //need to resolve this path issue
 // const db = require("db");
 
-const addRecords = require("../operations/addRecords");
+const addDepartment = require("../operations/addDepartment");
+const addRole = require("../operations/addRole");
+const addEmployee = require("../operations/addEmployee");
+
 const updateRecords = require("../operations/updateRecords");
 const viewRecords = require("../operations/viewRecords");
 
@@ -12,12 +15,6 @@ const mysql = require("mysql");
 
 const consoleTable = require("console.table");
 const { connect } = require("./connection");
-const actionQuestion = {
-  type: "list",
-  name: "action",
-  message: "do you want to add, view or update data?",
-  choices: ["add", "view", "update"],
-};
 
 //inquirer choices
 //note that the only requirement of user story is to update employee roles
@@ -39,16 +36,19 @@ function updateData(theTable, theField, theCriteria) {
   //pass in the new value to update the database
 }
 //example using console.table
-const queryTest = "SELECT * FROM employees";
-
+const employeeQuery = "SELECT * FROM employees";
+const departmentsQuery = "SELECT * FROM departments";
+const roleQuery = "SELECT * FROM roles";
 //Use inquirer to allow for command line input
 function askQuestions() {
   inquirer
     .prompt([
-      actionQuestion,
-      //code here
-      //which table do you want to use
-
+      {
+        type: "list",
+        name: "action",
+        message: "do you want to add, view or update data?",
+        choices: ["add", "view", "update"],
+      },
       {
         type: "list",
         name: "tableSelection",
@@ -57,6 +57,84 @@ function askQuestions() {
         when: (answers) =>
           answers.action === "view" || answers.action === "add",
       },
+
+      //----------CREATE----------
+      //Create new department. Columns are: name
+
+      {
+        type: "input",
+        name: "departmentName",
+        message: "What department would you like to add?",
+        when: (answers) =>
+          answers.action === "add" && answers.tableSelection === "departments",
+      },
+
+      //Create new role. Columns are: title, salary, department_id
+      {
+        type: "input",
+        name: "titleForRole",
+        message: "What title would you like to add?",
+        when: (answers) =>
+          answers.action === "add" && answers.tableSelection === "roles",
+      },
+      {
+        type: "number",
+        name: "salaryForRole",
+        message: "What is the yearly salary for this role? Do not add $ symbol",
+        when: (answers) => answers.titleForRole !== undefined,
+      },
+      {
+        type: "list",
+        name: "departmentForRole",
+        message: "What is the department for this role?",
+        choices: (answers) =>
+          connection.query(departmentsQuery).then((res) => {
+            let allOfTheDepartments = res.map((item) => item.id);
+            return allOfTheDepartments;
+          }),
+        when: (answers) => answers.salaryForRole !== undefined,
+      },
+
+      //ADD a new employee. columns are first_name, last_name, role_id, manager_id
+      {
+        type: "input",
+        name: "newEmpFirst",
+        message: "What is the new employee's first name?",
+        when: (answers) =>
+          answers.action === "add" && answers.tableSelection === "employees",
+      },
+      {
+        type: "input",
+        name: "newEmpLast",
+        message: "What is the new employee's last name?",
+        when: (answers) =>
+          answers.action === "add" && answers.newEmpFirst !== undefined,
+      },
+      {
+        type: "list",
+        name: "newEmpRole",
+        message: "What is the new employee's role?",
+        choices: (answers) =>
+          connection.query(roleQuery).then((res) => {
+            let allOfTheRoles = res.map((item) => item.id);
+            return allOfTheRoles;
+          }),
+        when: (answers) => answers.newEmpLast !== undefined,
+      },
+      {
+        type: "list",
+        name: "newEmpManager",
+        message: "Who is the new employee's manager?",
+        choices: (answers) =>
+          connection.query(employeeQuery).then((res) => {
+            let allOfTheEmployees = res.map((item) => item.id);
+            return allOfTheEmployees;
+          }),
+        when: (answers) => answers.newEmpRole !== undefined,
+      },
+
+      //----------UPDATE----------
+      //UPDATE employee
       {
         type: "list",
         name: "employeeSelection",
@@ -65,10 +143,7 @@ function askQuestions() {
         //and last name only, or to have the id saved. The schema did not have a concatenated
         //full name column, so I need to do this in the javascript.
         choices: (answers) =>
-          connection.query(queryTest).then((res) => {
-            let idToFullNameMap = res.map(
-              (item) => item.first_name + " " + item.last_name
-            );
+          connection.query(employeeQuery).then((res) => {
             let allOfTheNames = res.map(
               (item) => item.first_name + " " + item.last_name
             );
@@ -89,21 +164,43 @@ function askQuestions() {
       },
     ])
     .then((answers) => {
-      if (answers.action === "add" || answers.action === "view") {
-        console.log("you selected add or view");
-      } else {
-        console.log("you selected update");
-        connection.query(queryTest).then((res) => {});
-      }
+      //----------VIEW----------
+      //view the selected table
       if (answers.action === "view") {
         viewRecords(answers.tableSelection);
       }
-      if (answers.action === "add") {
-      }
-      if (answers.managerSelection !== null) {
-        console.log("manager selected");
 
+      //---------UPDATE----------
+      //update manager
+      if (answers.managerSelection !== null) {
         updateRecords(answers.employeeSelection, answers.managerSelection);
+      }
+
+      //----------CREATE----------
+      //create a new department
+      if (answers.departmentName !== undefined) {
+        addDepartment(answers.departmentName);
+      }
+
+      //Create a new role
+      if (answers.departmentForRole !== undefined) {
+        console.log("you are creating a new Role");
+        addRole(
+          answers.titleForRole,
+          answers.salaryForRole,
+          answers.departmentForRole
+        );
+      }
+
+      //create a new employee
+      if (answers.newEmpManager !== undefined) {
+        console.log("you are creating a new Employee");
+        addEmployee(
+          answers.newEmpFirst,
+          answers.newEmpLast,
+          answers.newEmpRole,
+          answers.newEmpManager
+        );
       }
 
       connection.end();
