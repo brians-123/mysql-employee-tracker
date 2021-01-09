@@ -4,7 +4,6 @@ const connection = require("../db/connection");
 
 /*proof of concept to add records to the department table*/
 module.exports = function addDepartment(departmentName) {
-  console.log("here is the department name: " + departmentName);
   connection
     .query(
       `INSERT INTO departments (name)

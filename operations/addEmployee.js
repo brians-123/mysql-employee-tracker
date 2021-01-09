@@ -23,5 +23,5 @@ module.exports = function addEmployee(
         manager_id +
         `)`
     )
-    .then(console.log("role created"));
+    .then(console.log("employee created"));
 };

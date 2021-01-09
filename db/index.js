@@ -16,25 +16,6 @@ const mysql = require("mysql");
 const consoleTable = require("console.table");
 const { connect } = require("./connection");
 
-//inquirer choices
-//note that the only requirement of user story is to update employee roles
-
-//function to query existing data. used for view and update
-function queryData(theTable, theField, theCriteria) {
-  //code goes here
-}
-
-//function to insert new record
-function insertData(theTable, theField, newValue) {
-  //code goes here
-}
-
-//function to update existing data
-function updateData(theTable, theField, theCriteria) {
-  //code goes here
-  queryData(theTable, theField, theCriteria);
-  //pass in the new value to update the database
-}
 //example using console.table
 const employeeQuery = "SELECT * FROM employees";
 const departmentsQuery = "SELECT * FROM departments";
@@ -184,7 +165,6 @@ function askQuestions() {
 
       //Create a new role
       if (answers.departmentForRole !== undefined) {
-        console.log("you are creating a new Role");
         addRole(
           answers.titleForRole,
           answers.salaryForRole,
@@ -194,7 +174,6 @@ function askQuestions() {
 
       //create a new employee
       if (answers.newEmpManager !== undefined) {
-        console.log("you are creating a new Employee");
         addEmployee(
           answers.newEmpFirst,
           answers.newEmpLast,
@@ -209,9 +188,3 @@ function askQuestions() {
 
 //start inquirer package
 askQuestions();
-
-module.exports = {
-  // Add departments, roles, employees
-  // View departments, roles, employees
-  // Update employee roles
-};

@@ -1,3 +1,5 @@
+//this is incomplete. I want to add more tests in at a later time.
+
 const connection = require("../db/connection");
 const mySQL = require("mysql");
 
