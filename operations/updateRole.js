@@ -2,14 +2,14 @@
 const mySQL = require("mysql");
 const connection = require("../db/connection");
 
-/*update employee manager' */
+/*update employee role' */
 
-module.exports = function updateRecords(employeeName, selectedManager) {
+module.exports = function updateRole(employeeName, role_id) {
   connection
     .query(
       `UPDATE employees 
-        SET manager_id = '` +
-        selectedManager +
+        SET role_id = '` +
+        role_id +
         `' 
         WHERE first_name = ` +
         "'" +

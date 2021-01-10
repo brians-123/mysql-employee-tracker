@@ -4,7 +4,8 @@ const addDepartment = require("../operations/addDepartment");
 const addRole = require("../operations/addRole");
 const addEmployee = require("../operations/addEmployee");
 
-const updateRecords = require("../operations/updateRecords");
+const updateManager = require("../operations/updateManager");
+const updateRole = require("../operations/updateRole");
 const viewRecords = require("../operations/viewRecords");
 
 const inquirer = require("inquirer");
@@ -15,6 +16,10 @@ const consoleTable = require("console.table");
 const employeeQuery = "SELECT * FROM employees";
 const departmentsQuery = "SELECT * FROM departments";
 const roleQuery = "SELECT * FROM roles";
+
+//set a map for the employee first and last, then pull indexOf to get the id
+var allOfTheRoles = [];
+
 //Use inquirer to allow for command line input
 function askQuestions() {
   inquirer
@@ -65,7 +70,12 @@ function askQuestions() {
         message: "What is the department for this role?",
         choices: (answers) =>
           connection.query(departmentsQuery).then((res) => {
-            let allOfTheDepartments = res.map((item) => item.id);
+            //We'll parse out the id from the answer later
+            let allOfTheDepartments = res.map(
+              (item) => "id: " + item.id + " name: " + item.name
+            );
+
+            // let allOfTheDepartments = res.map((item) => item.id);
             return allOfTheDepartments;
           }),
         when: (answers) => answers.salaryForRole !== undefined,
@@ -92,7 +102,10 @@ function askQuestions() {
         message: "What is the new employee's role?",
         choices: (answers) =>
           connection.query(roleQuery).then((res) => {
-            let allOfTheRoles = res.map((item) => item.id);
+            // allOfTheRoles = res.map((item) => item.id);
+            let allOfTheRoles = res.map(
+              (item) => "id: " + item.id + " title: " + item.title
+            );
             return allOfTheRoles;
           }),
         when: (answers) => answers.newEmpLast !== undefined,
@@ -103,7 +116,17 @@ function askQuestions() {
         message: "Who is the new employee's manager?",
         choices: (answers) =>
           connection.query(employeeQuery).then((res) => {
-            let allOfTheEmployees = res.map((item) => item.id);
+            //We'll parse out the id from the answer later
+            let allOfTheEmployees = res.map(
+              (item) =>
+                "id: " +
+                item.id +
+                " name: " +
+                item.first_name +
+                " " +
+                item.last_name
+            );
+
             return allOfTheEmployees;
           }),
         when: (answers) => answers.newEmpRole !== undefined,
@@ -113,11 +136,15 @@ function askQuestions() {
       //UPDATE employee
       {
         type: "list",
+        name: "typeOfUpdate",
+        message: "What do you want to update for the employee?",
+        choices: ["role", "manager"],
+        when: (answers) => answers.action === "update",
+      },
+      {
+        type: "list",
         name: "employeeSelection",
         message: "Which employee do you want to update?",
-        //currently, this provides the full name. I need it to parse for the first name
-        //and last name only, or to have the id saved. The schema did not have a concatenated
-        //full name column, so I need to do this in the javascript.
         choices: (answers) =>
           connection.query(employeeQuery).then((res) => {
             let allOfTheNames = res.map(
@@ -125,7 +152,20 @@ function askQuestions() {
             );
             return allOfTheNames;
           }),
-        when: (answers) => answers.action === "update",
+        when: (answers) => answers.typeOfUpdate !== undefined,
+      },
+      {
+        type: "list",
+        name: "updateEmployeeRole",
+        message: "Which role should the employee have?",
+        choices: (answers) =>
+          connection.query(roleQuery).then((res) => {
+            let allOfTheRoles = res.map((item) => item.title);
+            return allOfTheRoles;
+          }),
+        when: (answers) =>
+          answers.typeOfUpdate === "role" &&
+          answers.employeeSelection !== undefined,
       },
       {
         type: "list",
@@ -136,7 +176,9 @@ function askQuestions() {
             let allOfTheManagers = res.map((item) => item.id);
             return allOfTheManagers;
           }),
-        when: (answers) => answers.employeeSelection !== undefined,
+        when: (answers) =>
+          answers.typeOfUpdate === "manager" &&
+          answers.employeeSelection !== undefined,
       },
     ])
     .then((answers) => {
@@ -147,9 +189,22 @@ function askQuestions() {
       }
 
       //---------UPDATE----------
-      //update manager
-      if (answers.managerSelection !== null) {
-        updateRecords(answers.employeeSelection, answers.managerSelection);
+      //update role
+      //TO FIX - currently running update employee role
+      if (answers.updateEmployeeRole !== undefined) {
+        console.log(answers.employeeSelection, answers.updateEmployeeRole);
+
+        // updateRole(answers.employeeSelection, answers.updateEmployeeRole);
+      }
+      //update employee manager
+      if (answers.managerSelection !== undefined) {
+        console.log(
+          "employee selection" +
+            answers.employeeSelection +
+            "manager selection" +
+            answers.managerSelection
+        );
+        // updateManager(answers.employeeSelection, answers.managerSelection);
       }
 
       //----------CREATE----------
@@ -160,20 +215,38 @@ function askQuestions() {
 
       //Create a new role
       if (answers.departmentForRole !== undefined) {
+        //with the substring functions, we're pulling out just the id
+        const departmentForRoleId = answers.departmentForRole.substring(
+          4,
+          answers.departmentForRole.indexOf(" name:")
+        );
+
         addRole(
           answers.titleForRole,
           answers.salaryForRole,
-          answers.departmentForRole
+          departmentForRoleId
         );
       }
 
       //create a new employee
       if (answers.newEmpManager !== undefined) {
+        //with the substring functions, we're pulling out just the id
+        const newEmpManagerId = answers.newEmpManager.substring(
+          4,
+          answers.newEmpManager.indexOf(" name:")
+        );
+        const newEmpRoleId = answers.newEmpRole.substring(
+          4,
+          answers.newEmpRole.indexOf(" title:")
+        );
+        console.log("new emp role id" + newEmpRoleId + "asfd");
+        console.log("new emp manager id" + newEmpManagerId + "asfd");
+
         addEmployee(
           answers.newEmpFirst,
           answers.newEmpLast,
-          answers.newEmpRole,
-          answers.newEmpManager
+          newEmpRoleId,
+          newEmpManagerId
         );
       }
 
