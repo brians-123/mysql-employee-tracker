@@ -65,6 +65,7 @@ I struggled with a few things I'd like to come back to later:
 - Jest tests - use a stub to test create and update records. I may leave the view test in place.
 - Parsing out the id field. I'm presenting this to the user and I'd prefer to use logic that keeps it hidden.
 - Validation for the first employee - I'm doing a null check at the beginning of the program but I'm sure there's a more elegant way to do this.
+- Classes - weigh pros and cons between using operations files and using classes to organize the functionality
 
 ## Contact <a id="questions"></a> :email:
 
