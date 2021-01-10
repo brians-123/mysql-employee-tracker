@@ -10,14 +10,9 @@ const viewRecords = require("../operations/viewRecords");
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 
-// const consoleTable = require("console.table");
-
 const employeeQuery = "SELECT * FROM employees";
 const departmentsQuery = "SELECT * FROM departments";
 const roleQuery = "SELECT * FROM roles";
-
-//set a map for the employee first and last, then pull indexOf to get the id
-var allOfTheRoles = [];
 
 //Use inquirer to allow for command line input
 function askQuestions() {
@@ -39,8 +34,7 @@ function askQuestions() {
       },
 
       //----------CREATE----------
-      //Create new department. Columns are: name
-
+      //CREATE new department. Columns are: name
       {
         type: "input",
         name: "departmentName",
@@ -49,7 +43,7 @@ function askQuestions() {
           answers.action === "add" && answers.tableSelection === "departments",
       },
 
-      //Create new role. Columns are: title, salary, department_id
+      //CREATE new role. Columns are: title, salary, department_id
       {
         type: "input",
         name: "titleForRole",
@@ -69,18 +63,16 @@ function askQuestions() {
         message: "What is the department for this role?",
         choices: (answers) =>
           connection.query(departmentsQuery).then((res) => {
-            //We'll parse out the id from the answer later
+            //We'll pull out the id from the answer later
             let allOfTheDepartments = res.map(
               (item) => "id: " + item.id + " name: " + item.name
             );
-
-            // let allOfTheDepartments = res.map((item) => item.id);
             return allOfTheDepartments;
           }),
         when: (answers) => answers.salaryForRole,
       },
 
-      //ADD a new employee. columns are first_name, last_name, role_id, manager_id
+      //CREATE new employee. columns are first_name, last_name, role_id, manager_id
       {
         type: "input",
         name: "newEmpFirst",
@@ -100,7 +92,7 @@ function askQuestions() {
         message: "What is the new employee's role?",
         choices: (answers) =>
           connection.query(roleQuery).then((res) => {
-            // allOfTheRoles = res.map((item) => item.id);
+            //We'll pull out the id from the answer later
             let allOfTheRoles = res.map(
               (item) => "id: " + item.id + " title: " + item.title
             );
@@ -114,7 +106,7 @@ function askQuestions() {
         message: "Who is the new employee's manager?",
         choices: (answers) =>
           connection.query(employeeQuery).then((res) => {
-            //We'll parse out the id from the answer later
+            //We'll pull out the id from the answer later
             let allOfTheEmployees = res.map(
               (item) =>
                 "id: " +
@@ -124,7 +116,6 @@ function askQuestions() {
                 " " +
                 item.last_name
             );
-
             return allOfTheEmployees;
           }),
         when: (answers) => answers.newEmpRole,
@@ -145,6 +136,7 @@ function askQuestions() {
         message: "Which employee do you want to update?",
         choices: (answers) =>
           connection.query(employeeQuery).then((res) => {
+            //We'll pull out the id from the answer later
             let allOfTheNames = res.map(
               (item) =>
                 "id: " +
@@ -164,7 +156,10 @@ function askQuestions() {
         message: "Which role should the employee have?",
         choices: (answers) =>
           connection.query(roleQuery).then((res) => {
-            let allOfTheRoles = res.map((item) => item.title);
+            //We'll pull out the id from the answer later
+            let allOfTheRoles = res.map(
+              (item) => "id: " + item.id + " title: " + item.title
+            );
             return allOfTheRoles;
           }),
         when: (answers) =>
@@ -176,6 +171,7 @@ function askQuestions() {
         message: "Who should be their new manager?",
         choices: (answers) =>
           connection.query("SELECT * FROM employees").then((res) => {
+            //We'll pull out the id from the answer later
             let allOfTheManagers = res.map(
               (item) =>
                 "id: " +
@@ -194,27 +190,27 @@ function askQuestions() {
     ])
     .then((answers) => {
       //----------VIEW----------
-      //view the selected table
+      //VIEW the selected table
       if (answers.action === "view") {
         viewRecords(answers.tableSelection);
       }
 
       //---------UPDATE----------
-      //update role
-      //TO FIX - currently running update employee role
+      //UPDATE role
       if (answers.updateEmployeeRole) {
-        console.log(answers.employeeSelection, answers.updateEmployeeRole);
-
-        // updateRole(answers.employeeSelection, answers.updateEmployeeRole);
+        const updateEmpRoleEmpId = answers.employeeSelection.substring(
+          4,
+          answers.employeeSelection.indexOf(" name:")
+        );
+        const updateEmpRoleRoleId = answers.updateEmployeeRole.substring(
+          4,
+          answers.updateEmployeeRole.indexOf(" title:")
+        );
+        updateRole(updateEmpRoleEmpId, updateEmpRoleRoleId);
       }
-      //update employee manager
+
+      //UPDATE employee manager
       if (answers.managerSelection) {
-        // console.log(
-        //   "employee selection" +
-        //     answers.employeeSelection +
-        //     "manager selection" +
-        //     answers.managerSelection
-        // );
         const updateMgrEmpId = answers.employeeSelection.substring(
           4,
           answers.employeeSelection.indexOf(" name:")
@@ -223,18 +219,16 @@ function askQuestions() {
           4,
           answers.managerSelection.indexOf(" name:")
         );
-        console.log(updateMgrEmpId);
-        console.log(updateMgrMgrId);
         updateManager(updateMgrEmpId, updateMgrMgrId);
       }
 
       //----------CREATE----------
-      //create a new department
+      //CREATE a new department
       if (answers.departmentName) {
         addDepartment(answers.departmentName);
       }
 
-      //Create a new role
+      //CREATE a new role
       if (answers.departmentForRole) {
         //with the substring functions, we're pulling out just the id
         const departmentForRoleId = answers.departmentForRole.substring(
@@ -249,7 +243,7 @@ function askQuestions() {
         );
       }
 
-      //create a new employee
+      //CREATE a new employee
       if (answers.newEmpManager) {
         //with the substring functions, we're pulling out just the id
         const newEmpManagerId = answers.newEmpManager.substring(
@@ -260,8 +254,6 @@ function askQuestions() {
           4,
           answers.newEmpRole.indexOf(" title:")
         );
-        console.log("new emp role id" + newEmpRoleId + "asfd");
-        console.log("new emp manager id" + newEmpManagerId + "asfd");
 
         addEmployee(
           answers.newEmpFirst,
@@ -270,7 +262,6 @@ function askQuestions() {
           newEmpManagerId
         );
       }
-
       connection.end();
     });
 }

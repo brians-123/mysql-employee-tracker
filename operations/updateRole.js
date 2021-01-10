@@ -1,19 +1,17 @@
-//operation to update a record in the database
+//operation to update an employee's role in the database
 const mySQL = require("mysql");
 const connection = require("../db/connection");
 
-/*update employee role' */
-
-module.exports = function updateRole(employeeName, role_id) {
+module.exports = function updateRole(employeeId, role_id) {
   connection
     .query(
       `UPDATE employees 
         SET role_id = '` +
         role_id +
         `' 
-        WHERE first_name = ` +
+        WHERE id = ` +
         "'" +
-        employeeName +
+        employeeId +
         "'"
     )
     .then(console.log("role updated"));

@@ -1,20 +1,17 @@
-//operation to update a record in the database
+//operation to update an employee's manager in the database
 const mySQL = require("mysql");
 const connection = require("../db/connection");
 
-/*update employee manager' */
-//need to fix query's where criteria to use an id field instead.
-
-module.exports = function updateManager(employeeName, selectedManager) {
+module.exports = function updateManager(selectedEmpId, selectedManager) {
   connection
     .query(
       `UPDATE employees 
         SET manager_id = '` +
         selectedManager +
         `' 
-        WHERE first_name = ` +
+        WHERE id = ` +
         "'" +
-        employeeName +
+        selectedEmpId +
         "'"
     )
     .then(console.log("manager updated"));

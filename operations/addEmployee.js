@@ -1,9 +1,7 @@
-//operation to add a record in the database
+//operation to add an Employee record in the database
 const mySQL = require("mysql");
 const connection = require("../db/connection");
 
-//add records to the roles table
-//first_name, last_name, role_id, manager_id
 module.exports = function addEmployee(
   first_name,
   last_name,

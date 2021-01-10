@@ -1,8 +1,7 @@
-//operation to add a record in the database
+//operation to add a Role record in the database
 const mySQL = require("mysql");
 const connection = require("../db/connection");
 
-//add records to the roles table
 module.exports = function addRole(title, salary, department_id) {
   connection
     .query(

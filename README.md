@@ -24,8 +24,8 @@ This project uses a mysql database to store employee, role, and department data.
 ## User Story <a id="user-story"></a> :woman:
 
 - AS AN HR Manager,
-- I WANT to be able to manage departments roles and employees as we have org changes
-- SO THAT I can keep employee information up to date
+- I WANT to be able to store and manage departments roles and employees when changes occur in our organization
+- SO THAT I can process payroll properly
 
 ## Installation <a id="installation"></a> :floppy_disk:
 

@@ -1,8 +1,7 @@
-//operation to add a record in the database
+//operation to add a Department record in the database
 const mySQL = require("mysql");
 const connection = require("../db/connection");
 
-/*proof of concept to add records to the department table*/
 module.exports = function addDepartment(departmentName) {
   connection
     .query(
