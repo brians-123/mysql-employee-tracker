@@ -62,7 +62,7 @@ function askQuestions() {
         type: "number",
         name: "salaryForRole",
         message: "What is the yearly salary for this role? Do not add $ symbol",
-        when: (answers) => answers.titleForRole !== undefined,
+        when: (answers) => answers.titleForRole,
       },
       {
         type: "list",
@@ -78,7 +78,7 @@ function askQuestions() {
             // let allOfTheDepartments = res.map((item) => item.id);
             return allOfTheDepartments;
           }),
-        when: (answers) => answers.salaryForRole !== undefined,
+        when: (answers) => answers.salaryForRole,
       },
 
       //ADD a new employee. columns are first_name, last_name, role_id, manager_id
@@ -93,8 +93,7 @@ function askQuestions() {
         type: "input",
         name: "newEmpLast",
         message: "What is the new employee's last name?",
-        when: (answers) =>
-          answers.action === "add" && answers.newEmpFirst !== undefined,
+        when: (answers) => answers.action === "add" && answers.newEmpFirst,
       },
       {
         type: "list",
@@ -108,7 +107,7 @@ function askQuestions() {
             );
             return allOfTheRoles;
           }),
-        when: (answers) => answers.newEmpLast !== undefined,
+        when: (answers) => answers.newEmpLast,
       },
       {
         type: "list",
@@ -129,7 +128,7 @@ function askQuestions() {
 
             return allOfTheEmployees;
           }),
-        when: (answers) => answers.newEmpRole !== undefined,
+        when: (answers) => answers.newEmpRole,
       },
 
       //----------UPDATE----------
@@ -152,7 +151,7 @@ function askQuestions() {
             );
             return allOfTheNames;
           }),
-        when: (answers) => answers.typeOfUpdate !== undefined,
+        when: (answers) => answers.typeOfUpdate,
       },
       {
         type: "list",
@@ -164,8 +163,7 @@ function askQuestions() {
             return allOfTheRoles;
           }),
         when: (answers) =>
-          answers.typeOfUpdate === "role" &&
-          answers.employeeSelection !== undefined,
+          answers.typeOfUpdate === "role" && answers.employeeSelection,
       },
       {
         type: "list",
@@ -177,8 +175,7 @@ function askQuestions() {
             return allOfTheManagers;
           }),
         when: (answers) =>
-          answers.typeOfUpdate === "manager" &&
-          answers.employeeSelection !== undefined,
+          answers.typeOfUpdate === "manager" && answers.employeeSelection,
       },
     ])
     .then((answers) => {
@@ -191,13 +188,13 @@ function askQuestions() {
       //---------UPDATE----------
       //update role
       //TO FIX - currently running update employee role
-      if (answers.updateEmployeeRole !== undefined) {
+      if (answers.updateEmployeeRole) {
         console.log(answers.employeeSelection, answers.updateEmployeeRole);
 
         // updateRole(answers.employeeSelection, answers.updateEmployeeRole);
       }
       //update employee manager
-      if (answers.managerSelection !== undefined) {
+      if (answers.managerSelection) {
         console.log(
           "employee selection" +
             answers.employeeSelection +
@@ -209,12 +206,12 @@ function askQuestions() {
 
       //----------CREATE----------
       //create a new department
-      if (answers.departmentName !== undefined) {
+      if (answers.departmentName) {
         addDepartment(answers.departmentName);
       }
 
       //Create a new role
-      if (answers.departmentForRole !== undefined) {
+      if (answers.departmentForRole) {
         //with the substring functions, we're pulling out just the id
         const departmentForRoleId = answers.departmentForRole.substring(
           4,
@@ -229,7 +226,7 @@ function askQuestions() {
       }
 
       //create a new employee
-      if (answers.newEmpManager !== undefined) {
+      if (answers.newEmpManager) {
         //with the substring functions, we're pulling out just the id
         const newEmpManagerId = answers.newEmpManager.substring(
           4,
