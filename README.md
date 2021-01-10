@@ -9,6 +9,7 @@
 - [License](#license)
 - [Contribute](#contribute)
 - [Tests](#tests)
+- [To-do Later](#to-do)
 - [Questions](#questions)
 
 ## Description <a id="description"></a> :page_facing_up:
@@ -20,6 +21,12 @@ This project uses a mysql database to store employee, role, and department data.
 - VIEW departments, roles and employees.
 
   This project has operations separated into separate folders that are exported into the main index.js file. It also utilizes jest tests which will pass if there is more than one record in each table. The viewing of tables in a clean format is through the use of the console.table npm package.
+
+  <br>Here is a link to the [github repository](https://github.com/brians-123/mysql-employee-tracker)
+
+  Here is a gif of the functionality:
+  ![Employee Tracker](Assets/mysql-employee-tracker.gif)
+  The full video can be viewed [here](https://drive.google.com/file/d/1Ll6oVb2uYwKSOpubXVqWEAp4OsXqgdQJ/view)
 
 ## User Story <a id="user-story"></a> :woman:
 
@@ -50,6 +57,14 @@ You should not contribute to this repository
 ## Tests <a id="tests"></a> :microscope:
 
 There is one working jest test suite for viewing records. It will pass if there is 1 or more records per table
+
+## To Do Later... <a id="to-do"></a> :calendar:
+
+I struggled with a few things I'd like to come back to later:
+
+- Jest tests - use a stub to test create and update records. I may leave the view test in place.
+- Parsing out the id field. I'm presenting this to the user and I'd prefer to use logic that keeps it hidden.
+- Validation for the first employee - I'm doing a null check at the beginning of the program but I'm sure there's a more elegant way to do this.
 
 ## Contact <a id="questions"></a> :email:
 
