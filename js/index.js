@@ -1,4 +1,4 @@
-const connection = require("./connection");
+const connection = require("../db/connection");
 
 const addDepartment = require("../operations/addDepartment");
 const addRole = require("../operations/addRole");
@@ -13,6 +13,25 @@ const mysql = require("mysql");
 const employeeQuery = "SELECT * FROM employees";
 const departmentsQuery = "SELECT * FROM departments";
 const roleQuery = "SELECT * FROM roles";
+
+//Does a null check and skips the manager prompt if it's the first employee
+let empNullCheck = [];
+empNullCheck = connection.query(
+  "SELECT id FROM employees LIMIT 1",
+  (err, result) => {
+    if (err) {
+      throw err;
+    } else {
+      setValue(result);
+    }
+  }
+);
+
+function setValue(value) {
+  empNullCheck = value;
+  //launches the questions
+  askQuestions();
+}
 
 //Use inquirer to allow for command line input
 function askQuestions() {
@@ -105,6 +124,8 @@ function askQuestions() {
         name: "newEmpManager",
         message: "Who is the new employee's manager?",
         choices: (answers) =>
+          //ideas
+          // make default a specific value
           connection.query(employeeQuery).then((res) => {
             //We'll pull out the id from the answer later
             let allOfTheEmployees = res.map(
@@ -118,7 +139,7 @@ function askQuestions() {
             );
             return allOfTheEmployees;
           }),
-        when: (answers) => answers.newEmpRole,
+        when: (answers) => answers.newEmpRole && empNullCheck.length != 0,
       },
 
       //----------UPDATE----------
@@ -244,27 +265,34 @@ function askQuestions() {
       }
 
       //CREATE a new employee
-      if (answers.newEmpManager) {
-        //with the substring functions, we're pulling out just the id
-        const newEmpManagerId = answers.newEmpManager.substring(
-          4,
-          answers.newEmpManager.indexOf(" name:")
-        );
-        const newEmpRoleId = answers.newEmpRole.substring(
-          4,
-          answers.newEmpRole.indexOf(" title:")
-        );
 
-        addEmployee(
-          answers.newEmpFirst,
-          answers.newEmpLast,
-          newEmpRoleId,
-          newEmpManagerId
-        );
+      if (
+        answers.newEmpManager ||
+        (answers.newEmpRole && empNullCheck.length == 0)
+      ) {
+        //with the substring functions, we're pulling out just the id
+        let newEmpManagerId = null;
+
+        if (empNullCheck.length != 0) {
+          newEmpManagerId = answers.newEmpManager.substring(
+            4,
+            answers.newEmpManager.indexOf(" name:")
+          );
+        }
+        {
+          const newEmpRoleId = answers.newEmpRole.substring(
+            4,
+            answers.newEmpRole.indexOf(" title:")
+          );
+
+          addEmployee(
+            answers.newEmpFirst,
+            answers.newEmpLast,
+            newEmpRoleId,
+            newEmpManagerId
+          );
+        }
       }
       connection.end();
     });
 }
-
-//start inquirer package
-askQuestions();
