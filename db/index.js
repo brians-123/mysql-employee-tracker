@@ -3,7 +3,6 @@ const connection = require("./connection");
 const addDepartment = require("../operations/addDepartment");
 const addRole = require("../operations/addRole");
 const addEmployee = require("../operations/addEmployee");
-
 const updateManager = require("../operations/updateManager");
 const updateRole = require("../operations/updateRole");
 const viewRecords = require("../operations/viewRecords");
@@ -11,7 +10,7 @@ const viewRecords = require("../operations/viewRecords");
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 
-const consoleTable = require("console.table");
+// const consoleTable = require("console.table");
 
 const employeeQuery = "SELECT * FROM employees";
 const departmentsQuery = "SELECT * FROM departments";
@@ -147,7 +146,13 @@ function askQuestions() {
         choices: (answers) =>
           connection.query(employeeQuery).then((res) => {
             let allOfTheNames = res.map(
-              (item) => item.first_name + " " + item.last_name
+              (item) =>
+                "id: " +
+                item.id +
+                " name: " +
+                item.first_name +
+                " " +
+                item.last_name
             );
             return allOfTheNames;
           }),
@@ -171,9 +176,18 @@ function askQuestions() {
         message: "Who should be their new manager?",
         choices: (answers) =>
           connection.query("SELECT * FROM employees").then((res) => {
-            let allOfTheManagers = res.map((item) => item.id);
+            let allOfTheManagers = res.map(
+              (item) =>
+                "id: " +
+                item.id +
+                " name: " +
+                item.first_name +
+                " " +
+                item.last_name
+            );
             return allOfTheManagers;
           }),
+
         when: (answers) =>
           answers.typeOfUpdate === "manager" && answers.employeeSelection,
       },
@@ -195,13 +209,23 @@ function askQuestions() {
       }
       //update employee manager
       if (answers.managerSelection) {
-        console.log(
-          "employee selection" +
-            answers.employeeSelection +
-            "manager selection" +
-            answers.managerSelection
+        // console.log(
+        //   "employee selection" +
+        //     answers.employeeSelection +
+        //     "manager selection" +
+        //     answers.managerSelection
+        // );
+        const updateMgrEmpId = answers.employeeSelection.substring(
+          4,
+          answers.employeeSelection.indexOf(" name:")
         );
-        // updateManager(answers.employeeSelection, answers.managerSelection);
+        const updateMgrMgrId = answers.managerSelection.substring(
+          4,
+          answers.managerSelection.indexOf(" name:")
+        );
+        console.log(updateMgrEmpId);
+        console.log(updateMgrMgrId);
+        updateManager(updateMgrEmpId, updateMgrMgrId);
       }
 
       //----------CREATE----------
